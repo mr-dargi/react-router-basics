@@ -1,5 +1,11 @@
-import { Outlet, Link, useLoaderData } from "react-router-dom";
+import { Outlet, Link, useLoaderData} from "react-router-dom";
 import { getContacts } from "../contacts";
+
+
+export async function loader() {
+  const contacts = await getContacts();
+  return { contacts };
+}
 
 export default function Root() {
   const { contacts } = useLoaderData();
@@ -31,27 +37,28 @@ export default function Root() {
           </form>
         </div>
         <nav>
-          { contacts.length ? (
-            <ul>
-              { contacts.map(contact => {
-                <li key={ contact.id }>
-                  <link to={ `contacts/${contact.id}` }>
-                    { contact.first || contact.last ? (
-                      <>
-                        { contact.first } { contact.last }
-                      </>
-                    ) : (
-                      <i>No Name</i>
-                    ) } { " " }
-                  </link>
-                </li>
-              }) }
-            </ul>
-          ) : (
-            <p>
-              <i>No contacts</i>
-            </p>
-          ) }
+          {contacts.length ? (
+              <ul>
+                {contacts.map((contact) => (
+                  <li key={contact.id}>
+                    <Link to={`contacts/${contact.id}`}>
+                      {contact.first || contact.last ? (
+                        <>
+                          {contact.first} {contact.last}
+                        </>
+                      ) : (
+                        <i>No Name</i>
+                      )}{" "}
+                      {contact.favorite && <span>★</span>}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p>
+                <i>No contacts</i>
+              </p>
+            )}
         </nav>
       </div>
       <div id="detail">
@@ -59,10 +66,4 @@ export default function Root() {
       </div>
     </>
   );
-};
-
-
-export async function loader() {
-  const contacts = await getContacts();
-  return { contacts };
 };
